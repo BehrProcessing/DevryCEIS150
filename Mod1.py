@@ -15,15 +15,15 @@ while True:
         print('Please enter a number value:')
         continue   
 for f in range(0,listSize):
-    makePrice=float(Min)+(f/2)*(random.randrange(-1,1)+(random.randrange(1,99)/100))
+    makePrice=float(Min)+(f/2)*(random.randrange(-1,1)+(random.randrange(1,99)/100)) #makes the random price list
     if makePrice>0:
-        price="{:.2f}".format(float(makePrice))
+        price="{:.2f}".format(float(makePrice)) #reformats to two decimal spaces as string float
         price_list.append(price)
         Sum+=float(price)
         if float(price) > float(Min):
-            Greater+=1 ; G.append(price)
+            Greater+=1 ; G.append(price) #Creates a list of prices greater than budget
         elif float(price) <= float(Min):
-            Less+=1 ; L.append(price) 
+            Less+=1 ; L.append(price)    #Creates a list of prices at or under budget
 print("Hello",name.capitalize(),"Your maximum budget was $",Min)
 print("There are",Greater,"price(s) that are out of your budget;") ;list_print(G)
 print("There are",Less,"price(s) within your budget;")             ;list_print(L)
