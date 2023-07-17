@@ -9,49 +9,16 @@ class Stock:
         self._name    = name
         self._shares  = shares
         self.DataList = [] # list of daily stock data
-    @property
-    def symbol(self):
-        return self._symbol
+   
     @property
     def name(self):
         return self._name
     @name.setter
     def name(self,name):
         self._name = name
-    @property
-    def shares(self):
-        return self._shares
-    def buy(self,amount):
-        self._shares+=amount
-    def sell(self,amount):
-        if self._shares > amount:
-            self._shares-=amount
-        else:
-            print(f'You do not have enough {self._symbol} to sell {amount}')
-    def add_data(self,daydataobject):
-        self.DataList.append(daydataobject)
+    
 # Create DailyData class here.
-class DailyData:
-    def __init__(self,date,close,volume):
-        self._date   = date
-        self._close  = close
-        self._volume = volume
-    @property
-    def date(self):
-        return self._date
-    @date.setter
-    def date(self,date):
-        self._date=date
-    @property
-    def close(self):
-        return self._close
-    @close.setter
-    def close(self,close):
-        self._close=close
-    @property
-    def volume(self):
-        return self._volume
-        
+
 # Unit Test - Do Not Change Code Below This Line *** *** *** *** *** *** *** *** ***
 # main() is used for unit testing only. It will run when stock_class.py is run.
 # Run this to test your class code. Once you have eliminated all errors, you are
