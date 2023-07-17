@@ -16,11 +16,12 @@ while True:
     except ValueError:
         print('Please enter a number:')
         continue   
-price_list=[] ; import random ; listSize=random.randrange(5,20) ; G=[] 
+price_list=[] ; import random ;                 #!!! create a list of prices
+listSize=random.randrange(5,20) ; G=[]          #!!! create a list of prices
 for f in range(0,listSize):                     #!!! create a list of prices
     price=float(min_price)+f*(random.randrange(0,2)+(random.randrange(1,99)/100))
     if price>0:
-        price_list.append(price)                
+        price_list.append(price)                #!!! create a list of prices
 for price in price_list:                        #!!! for price in price_list
     if price > min_price:                       #!!!    if price > min_price
         sum+=price                              #!!!    add current price to sum
