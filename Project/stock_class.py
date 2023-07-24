@@ -24,10 +24,12 @@ class Stock:
     def buy(self,amount):
         self._shares+=amount
     def sell(self,amount):
-        if self._shares > amount:
+        if self._shares >= amount:
             self._shares-=amount
+            return True
         else:
             print(f'You do not have enough {self._symbol} to sell {amount}')
+            return False
     def add_data(self,daydataobject):
         self.DataList.append(daydataobject)
 # Create DailyData class here.
