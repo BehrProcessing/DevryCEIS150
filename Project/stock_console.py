@@ -17,7 +17,7 @@ def new_menu(menu_header,menu_list='',option=''):
         print('*!* '+option)
     print(menu_header.upper()+' |\n'+'_'*(len(menu_header))+"_|\n")
 #    menu_tab(menu_header)
-def get_Symbols(stock_list,Verb=''):
+def get_Symbols(stock_list,Verbage=''):
     size=5
     print('                Available Stocks')
     print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n[',end='')
@@ -29,22 +29,25 @@ def get_Symbols(stock_list,Verb=''):
             x=' ]'
         print(' '*(size-len(stock.symbol))+stock.symbol,end=x)
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    if Verb:
-        return input(f'Stock Symbol you wish to {Verb} shares of: ').upper() 
-    else:
-        return input('Stock Symbol you would like to add information to: ').upper()
+    Input = input(f'Stock Symbol you wish to {Verbage}: ').upper() 
+    found=False
+    for stock in stock_list:
+        if stock.symbol==Input:
+            found=stock
+            break
+    return found, Input
 def number(Q='',outsideInput=''):
     userInput=outsideInput
-    if not outsideInput:
+    if not outsideInput and Q!='pass':
         print(Q,end=" ")
     while True:
-        if not outsideInput:
+        if not outsideInput and Q!='pass':
             userInput=input()
         try:
             Num=float(userInput)
             return Num
         except:
-            if outsideInput:
+            if outsideInput or Q=='pass':
                 return False
             print(f'"{userInput}" is a string, please enter a number: ',end='')
             userInput=''
@@ -112,20 +115,21 @@ def manage_stocks(stock_list,option = ""):
         
 # Add new stock to track
 def add_stock(stock_list,option=""):
-    new_menu('Add Stock') 
-    print('Enter / to Exit this page at any time.')
+    new_menu('Add Stock') ; print('Enter / to Exit this page at any time.')
     while option != '0':
-        Input=['Symbol','Company Name']
+        Input=['symbol','company name','shares']
         for i,key in enumerate(Input):
             while not option:
-                option=input(f'Please enter the {key}: ')
-                if not option:
-                    print('Enter a valid input to continue. ',end='')
-                elif option=='/':
+                print(f'Please enter the {key.capitalize()}: ',end='')
+                option=input()
+                if option=='/':
                     return
-            Input[i]=option
-        Shares=number('Please enter the number of shares held:')
-        new_stock=Stock(Input[0].upper(),Input[1].title(),Shares)
+                elif Input[i]=='shares':
+                        option=number('pass',option)
+                if not option:
+                    print(f'*!* Input not valid *!* ',end='')
+            Input[i]=option ; option=''
+        new_stock=Stock(Input[0].upper(),Input[1].title(),Input[2])
         stock_list.append(new_stock)
         print(f'Added {new_stock.shares} shares of {new_stock.name}({new_stock.symbol})')
         option=input("*** Press Enter to Continue or 0 to Exit ***")
@@ -149,62 +153,45 @@ def update_shares(stock_list,option = ""):
 # Buy Stocks (add to shares)
 def buy_stock(stock_list,option=''):
     while option!='0':
-        new_menu('Portfolio Marketplace')
-        Tense='Bought';Verb='buy' 
-        Symbol=get_Symbols(stock_list, Verb)
-        found=False
-        for stock in stock_list:
-            if stock.symbol==Symbol:
-                found=stock
-                break
+        new_menu('Buy Stock') ; Tense='Bought' ; Verbage='buy shares of' 
+        found,Input=get_Symbols(stock_list, Verbage)
         if found:
-            print(f'You have {found.shares} shares of',Symbol)
-            Shares=number(f'How many shares would you like to {Verb}?')
+            print(f'You have {found.shares} shares of',found.symbol)
+            Shares=number(f'How many shares would you like to {Verbage}?')
             found.buy(Shares)
-            print(Tense,Shares,'shares of',Symbol+', you now have',found.shares )
-            option = input(f"*** Press Enter to {Verb} more or 0 to return to the menu ***")
+            print(Tense,Shares,'shares of',found.symbol+', you now have',found.shares )
+            option = input("*** Press Enter to continue or 0 to return to the menu ***")
         else:
-            print(f'"{Symbol}" is not a valid option.')
+            print(f'"{Input}" is not a valid option.')
             option = input("*** Press Enter to try again or 0 to return to menu ***")
 
 # Sell Stocks (subtract from shares)
 def sell_stock(stock_list,option=''):
     while option!='0':
-        new_menu('Portfolio Marketplace')
-        Tense='Sold';Verb='sell'
-        Symbol=get_Symbols(stock_list, Verb)
-        found=False
-        for stock in stock_list:
-            if stock.symbol==Symbol:
-                found=stock
-                break
+        new_menu('Sell Stock') ; Tense='Sold' ; Verbage='sell shares of' 
+        found,Input=get_Symbols(stock_list, Verbage)
         if found:
-            print(f'You have {found.shares} shares of',Symbol)
-            Shares=number(f'How many shares would you like to {Verb}?')
+            print(f'You have {found.shares} shares of',found.symbol)
+            Shares=number(f'How many shares would you like to {Verbage}?')
             Enough=found.sell(Shares)
             if Enough:
-                print(Tense,Shares,'shares of',Symbol+', you now have',found.shares )
-            option = input(f"*** Press Enter to {Verb} more or 0 to return to the menu ***")
+                print(Tense,Shares,'shares of',found.symbol+', you now have',found.shares )
+            option = input("*** Press Enter to continue or 0 to return to the menu ***")
         else:
-            print(f'"{Symbol}" is not a valid option.')
+            print(f'"{Input}" is not a valid option.')
             option = input("*** Press Enter to try again or 0 to return to menu ***")
 
 # Remove stock and all daily data
 def delete_stock(stock_list,option=''):
     while option !='0':
-        new_menu('Remove Stocks') ; Tense='Removed' ; Verb='delete'
-        Symbol=get_Symbols(stock_list,Verb) 
-        found=False
-        for stock in stock_list:
-            if stock.symbol==Symbol:
-                found=stock
-                break
+        new_menu('Remove Stocks') ; Tense='Removed' ; Verbage='delete'
+        found,Input=get_Symbols(stock_list, Verbage)
         if found:
             print(found.symbol,'has been', Tense)
             stock_list.pop(stock_list.index(found))
-            option = input(f"*** Press Enter to {Verb} more or 0 to return to the menu ***")
+            option = input(f"*** Press Enter to continue or 0 to return to the menu ***")
         else:
-            print(f'"{Symbol}" is not a valid option.')
+            print(f'"{Input}" is not a valid option.')
             option = input("*** Press Enter to try again or 0 to return to menu ***")
 
 # List stocks being tracked
@@ -240,24 +227,19 @@ def list_stocks(stock_list):
 # Add Daily Stock Data
 def add_stock_data(stock_list,option=''):
     while option !='0':
-        new_menu('Add Stock Data')
-        Symbol=get_Symbols(stock_list)
-        found=False
-        for stock in stock_list:
-            if stock.symbol==Symbol:
-                found=stock
-                break
+        new_menu('Add Stock Data') ; Verbage = 'add information to'
+        found,Input=get_Symbols(stock_list, Verbage)
         if found:
             print('Please enter the daily data information in the format as follows.')
             print('Use numerical values and "/" for date. Include commas between data.')
-            print(f'| {Symbol} |mm/dd/yy,ClosingPrice,Volume */* to pick a new symbol.')
+            print(f'| {found.symbol} |mm/dd/yy,ClosingPrice,Volume     */* to pick a new symbol.')
             import datetime ; today=datetime.date.today() ; year=today.year
             error='';inputData=''
             while option!='/' or inputData!='/':
-                spacing=f'| {Symbol} |'
+                symbol_form=f'| {found.symbol} |'
                 if error:
-                    print('| '+'*'*len(Symbol)+' |'+error)
-                inputData=input(spacing+'mm/dd/yy,##,##\n'+spacing)
+                    print('| '+'*'*len(found.symbol)+' |'+error)
+                inputData=input(symbol_form+'mm/dd/yy,##,##\n'+symbol_form)
                 if inputData=='/':
                     break
                 Data=inputData.replace(' ','').split(',')
@@ -290,20 +272,20 @@ def add_stock_data(stock_list,option=''):
                 else:
                     error+=','+Data[2]
                 if error.count('!'):
-                    error+=' *!* <--- ERORRS in your input.'
+                    error+='    *!* Input Error *!*'
                     continue
                 from datetime import datetime
                 daily_data=DailyData(datetime.strptime(date,"%m/%d/%y"),float(price),float(volume))
                 found.add_data(daily_data)
                 error=''
-                print(f'{spacing}{date}, Closing Price ${price}, Volume {volume} *added to report*')
-                option = input(f"*** Press Enter to add more {spacing} data, 0 returns to menu, / to change symbol***")
+                print(f'{symbol_form}{date}, Closing Price ${price}, Volume {volume} *added to report*')
+                option = input(f"*** Press Enter to add more {symbol_form} data, 0 returns to menu, / to change symbol***")
                 inputData=option
                 if option=='0':
                     return
         else:
-            print(f'"{Symbol}" is not a valid option.')
-            option = input("*** Press Enter to try again or 0 to return to menu ***")
+            print(f'"{Input}" is not a valid option.')
+            option = input("*** Press Enter to Continue or 0 to return to menu ***")
 
 # Display Report for All Stocks
 def display_report(stock_data):
