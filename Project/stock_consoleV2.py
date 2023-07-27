@@ -11,6 +11,8 @@ import stock_data
 #My Functions
 def pretend_screen_clear():
     print('_'*75+'')
+#def menu_tab(menu_header):
+#    print(menu_header.upper()+' |\n'+'_'*(len(menu_header))+"_|\n")
 def new_menu(menu_header,menu_list='',option=''):
     pretend_screen_clear();#clear_screen()
     if option and option not in menu_list:
