@@ -21,6 +21,14 @@ class Stock:
     @property
     def shares(self):
         return self._shares
+    @property
+    def ListData(self):
+        self._List=[self._symbol,self._name,self._shares]
+        return self._List
+    @property
+    def ListHeadings(self):
+        self._List=['Symbol','Company Name','Shares']
+        return self._List
     def buy(self,amount):
         self._shares+=amount
     def sell(self,amount):
@@ -32,6 +40,8 @@ class Stock:
             return False
     def add_data(self,daydataobject):
         self.DataList.append(daydataobject)
+        
+
 # Create DailyData class here.
 class DailyData:
     def __init__(self,date,close,volume):
