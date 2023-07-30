@@ -7,7 +7,7 @@ from datetime    import datetime
 from stock_class import Stock, DailyData
 from os          import path
 import stock_data
-
+from account_class import Robo, Traditional
 #My Functions
 def pretend_screen_clear():
     print('_'*75+'')
@@ -65,7 +65,7 @@ def select(options):
     return selection
 # Main Menu
 def main_menu(stock_list,option=''):
-    menu_list = ["1","2","3","4","5","0"]
+    menu_list = ["1","2","3","4","5","6","0"]
     while option != "0":
         new_menu("Stock Analyzer",menu_list,option)
         print("1 - Manage Stocks (Add, Update, Delete, List)")
@@ -73,12 +73,15 @@ def main_menu(stock_list,option=''):
         print("3 - Show Report")
         print("4 - Show Chart")
         print("5 - Manage Data (Save, Load, Retrieve)")
+        print("6 - Add an Investment Account")
         print("0 - Exit Program")
         option = select(menu_list)
         if option == "1":
             manage_stocks(stock_list)
         elif option == "5":
             manage_data(stock_list)
+        elif option == "6":
+            Investment_Type(stock_list)
         elif option == "0":
             print("    ~~~Goodbye~~~")
             pretend_screen_clear();#clear_screen()
@@ -464,6 +467,42 @@ def create_test(stock_list):
     _ = input("*** Press Enter to Continue ***")
     display_report(stock_list)
     
+def Investment_Type(stock_list):
+    print("Investment Account ---")
+    balance = float(input("What is your initial balance: "))
+    number = input("What is your account number: ")
+    acct= input("Do you want a Traditional (t) or Robo (r) account: ")
+    if acct.lower() == "r":
+        years = float(input("How many years until retirement: "))
+        robo_acct = Robo(balance, number, years)
+        print("Your investment return is ",robo_acct.investment_return())
+        print("\n\n")
+    elif acct.lower() == "t":
+        trad_acct = Traditional(balance, number)
+        temp_list=[]
+        print("Choose stocks from the list below: ")
+        while True:
+            print("Stock List: [",end="")
+            for stock in stock_list:
+                print(stock.symbol," ",end="")
+            print("]")
+            symbol = input("Which stock do you want to purchase, 0 to quit: ").upper()
+            if symbol =="0":
+                break
+            shares = float(input("How many shares do you want to buy?: "))
+            found = False
+            for stock in stock_list:
+              if stock.symbol == symbol:
+                  found = True
+                  current_stock = stock
+            if found == True:
+                current_stock.shares += shares 
+                temp_list.append(current_stock)
+                print("Bought ",shares,"of",symbol)
+            else:
+                print("Symbol Not Found ***")
+        trad_acct.add_stock(temp_list)
+   
 # Begin program
 def main():
     #check for database, create if not exists

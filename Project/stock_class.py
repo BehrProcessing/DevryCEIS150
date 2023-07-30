@@ -23,11 +23,19 @@ class Stock:
         return self._shares
     @property
     def ListData(self):
-        self._List=[self._symbol,self._name,self._shares]
+        #Alignment formatting style 'L&!' for left or 'R&!' for right
+          #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          #'L&!' or 'R&!' + formatted Value for list
+        self._List=['L&!' +self._symbol,
+                    'L&!' +self._name,
+                    'R&!' +"{:,.0f}".format(self._shares),
+                    'L&!' +"${:,.2f}".format(123456789),
+                    'L&!' +'sart7443667534']
         return self._List
+    
     @property
     def ListHeadings(self):
-        self._List=['Symbol','Company Name','Shares']
+        self._List=['Symbol','Company Name','Shares','Moneyformat','testing']
         return self._List
     def buy(self,amount):
         self._shares+=amount
