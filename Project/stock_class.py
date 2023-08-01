@@ -2,6 +2,7 @@
 # Author: Stephen Behr
 # Date: 7/14/2023
 from datetime import datetime
+import random
 # Create Stock class here
 class Stock:
     def __init__(self, symbol, name, shares):
@@ -29,8 +30,8 @@ class Stock:
         self._List=['L&!' +self._symbol,
                     'L&!' +self._name,
                     'R&!' +"{:,.0f}".format(self._shares),
-                    'L&!' +"${:,.2f}".format(123456789),
-                    'L&!' +'sart7443667534']
+                    'R&!' +"${:,.2f}".format(random.randrange(1,1100000)),
+                    'R&!' +"{:,.0f}".format(random.randrange(1,1100000))]
         return self._List
     
     @property

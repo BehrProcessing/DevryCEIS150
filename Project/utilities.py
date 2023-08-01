@@ -3,7 +3,6 @@
 # Date: 
 
 import matplotlib.pyplot as plt
-
 from os import system, name
 
 # Function to Clear the Screen
@@ -23,8 +22,35 @@ def sortDailyData(stock_list):
     for stock in stock_list:
         stock.DataList.sort(key=lambda s: s.date)
 
-# Function to create stock chart
-def display_stock_chart(stock_list,symbol):
-    clear_screen()
-    print("*** This Module Under Construction ***")
+def display_stock_chart(stock_list,found):
+    date=[]
+    price=[]
+    company=''
+    y=''
+    for stock in stock_list:
+        if stock.symbol == found.symbol.upper():
+            company= stock.name
+            for dailyData in stock.DataList:
+                m=dailyData.date.month
+                d=dailyData.date.day
+                y=dailyData.date.year
+                date.append(str(m)+'/'+str(d))
+                #date.append(dailyData.date)
+                price.append(dailyData.close)
+    plt.plot(date,price)
+    plt.xlabel(y)
+    plt.ylabel('Price')
+    plt.title(company)
+    #plt.yscale() #passing ‘log’ # Will display using logarithmic scale. Remove if you want linear scale.
+    plt.show()
     _ = input("*** Press Enter to Continue ***")
+
+
+
+
+
+
+
+
+
+

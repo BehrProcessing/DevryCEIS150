@@ -2,7 +2,7 @@
 # Author: Stephen Behr
 # Date: 7/22/23
 
-#from utilities   import display_stock_chart,clear_screen
+from utilities   import display_stock_chart,clear_screen
 from datetime    import datetime
 from stock_class import Stock, DailyData
 from os          import path
@@ -366,10 +366,17 @@ def display_report(stock_data):
     _ = input("*** Press Enter to Continue ***")
 
 # Display Chart
-def display_chart(stock_list):
-    pretend_screen_clear();#clear_screen()
-    print("*** This Module Under Construction ***")
-    _ = input("*** Press Enter to Continue ***")
+def display_chart(stock_list,option=''):
+    while option!='0' and option !='/':
+        new_menu('Print Chart','','','/');Verbage='Chart'
+        found,option=get_Symbols(stock_list, Verbage)
+        if found:
+            display_stock_chart(stock_list,found)  
+        else:
+            if option =='/':
+                return
+            print(f'Symbol "{option}" does not exist')
+            option = input("*** Press Enter to Continue or 0 to Return to Menu ***")
 
 # Manage Data Menu
 def manage_data(stock_list,option=''):
@@ -440,18 +447,18 @@ def create_test(stock_list):
     # new_stock=Stock('LONGSYMBOLTEST','company name',300000000000000)
     # stock_list.append(new_stock)
     # list_stocks(stock_list)
-    dd=random.randint(1,15)
+    dd=random.randint(14,15)
     mm=str(random.randint(1,12))
     yy=str(random.randint(10,23))
     pricechange=25
     volumechange=1000
     for stock in stock_list:
         day=dd
-        price=random.randint(1,100)+float(random.randint(1,99)/100)
+        price=random.randint(1,100)+float(random.random())
         volume=random.randrange(1,10000)
         for i in range(0,28-day):
-            volume_change=random.randint(-volumechange,volumechange)+float(random.randint(-99,99)/100)
-            price_change=random.randint(-pricechange,pricechange)+float(random.randint(-99,99)/100)
+            volume_change=random.randint(-volumechange,volumechange)+float(random.random())
+            price_change=random.randint(-pricechange,pricechange)+float(random.random())
             volume+=volume_change
             price+=price_change
             if price<0:
@@ -462,7 +469,8 @@ def create_test(stock_list):
             date=mm+'/'+str(day)+'/'+yy 
             daily_data=DailyData(datetime.strptime(date,"%m/%d/%y"),float(price),float(volume))
             stock.add_data(daily_data)
-            print(f'| {stock.symbol} |{date},{price},{volume}')
+            print(f'| {stock.symbol} |{date},{"{:.2f}".format(price)},{"{:.2f}".format(volume)}')
+            #print(f'| {stock.symbol} |{date},{price},{volume}')
     print('Added random daily data for report')
     _ = input("*** Press Enter to Continue ***")
     display_report(stock_list)
