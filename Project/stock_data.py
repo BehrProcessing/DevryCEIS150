@@ -12,10 +12,10 @@ import os
 import csv
 import time
 from datetime import datetime
-#from utilities import #clear_screen
+from utilities import clear_screen
 from utilities import sortDailyData
 from stock_class import Stock, DailyData
-
+import stock_console as SC
 # Create the SQLite database
 def create_database(stockDB="stocks.db"):
     try:
@@ -47,8 +47,10 @@ def create_database(stockDB="stocks.db"):
 def save_stock_data(stock_list):
     #clear_screen()
     stockDB = "stocks.db"
-    print(f'Press enter to overwrite {stockDB}, or Enter a filename to create or save to a different database')
-    filename=input()
+    filename=''
+    if __name__=='main' or __name__=='stock_console':
+        print(f'Press enter to overwrite {stockDB}, or Enter a filename to create or save to a different database')
+        filename=input()
     #excludedCharacters=['!','@','#','$','%','^','&',]
 
     if filename:
@@ -88,8 +90,10 @@ def save_stock_data(stock_list):
 # Load stocks and daily data from database
 def load_stock_data(stock_list,stockDB = "stocks.db"):
     stock_list.clear()
-    print(f'Press enter to load {stockDB}, or Enter the filename of another .db file ')
-    filename=input()
+    filename=''
+    if __name__=='main'or __name__=='stock_console':
+        print(f'Press enter to load {stockDB}, or Enter the filename of another .db file ')
+        filename=input()
     if filename:
         stockDB = filename+'.db'
     else:
@@ -115,7 +119,7 @@ def load_stock_data(stock_list,stockDB = "stocks.db"):
                 new_stock.add_data(daily_data)
             stock_list.append(new_stock)
         sortDailyData(stock_list)
-        print(stockDB,'exists')
+        print(stockDB,'Exists, Loading...')
     except:
         print(f'*!* {filename} could not be found')
 
@@ -126,10 +130,37 @@ def retrieve_stock_web(dateStart,dateEnd,stock_list):
     _ = input("*** Press Enter to Continue ***")
 
 # Get price and volume history from Yahoo! Finance using CSV import.
-def import_stock_web_csv(stock_list,symbol,filename):
-    #clear_screen()
-    print("*** This Module Under Construction ***")
-    _ = input("*** Press Enter to Continue ***")
+def import_stock_web_csv(stock_list):
+    #add historical data to stock in stock list
+    # escape='/';Input=''
+    # while Input!=escape:
+    #     SC.new_menu('Import Stock from Web Data CSV ','','',escape)
+    #     symbol,Input=SC.get_Symbols(stock_list,'Import Data for.')
+      
+    #     if symbol:
+    #         File=False;Filename=''
+    #         while not File or Input==escape:
+    #             try:
+    #                 Input=input('Enter the name of the file')
+    #                 with open(Input,newline='') as stockData:
+    #                     Datareader =csv.reader(stockData, delimiter=',')
+    #                     File=True
+    #                     print(Filename,'Exists, Loading...')
+    #                     next(Datareader)
+    #                     for row in Datareader:
+    #                         print(type(row[0]))
+    #                         dailyData=DailyData(datetime.strptime(row[0],"%m%d/%y"),float(row[4]),float(row[6]))
+    #                         symbol.add_data(dailyData)           
+    #             except FileNotFoundError:
+    #                 print(f"{Input} not found")
+    #         option = input("*** Press Enter to continue or 0 to return to the menu ***")
+    #     else:
+    #         if Input==escape:
+    #             return
+    #         print(f'"{Input}" is not a valid option.')
+    #         option = input("*** Press Enter to try again or 0 to return to menu ***")
+        
+        _ = input("*** Press Enter to Continue ***")
 
 def main():
     #clear_screen()

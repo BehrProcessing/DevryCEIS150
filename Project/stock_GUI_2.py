@@ -7,7 +7,7 @@ from os import path
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox, simpledialog, filedialog
-
+import stock_console as SC
 import csv
 import stock_data
 from stock_class import Stock, DailyData
@@ -268,8 +268,11 @@ class StockApp:
 
     # Import CSV stock history file.
     def importCSV_web_data(self):
-        messagebox.showinfo("Under Construction","This Module Not Yet Implemented")  
-    
+        symbol = self.stockList.get(self.stockList.curselection())
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            file=file_path.split('/')[-1]
+            SC.import_csv('import',symbol,file)
     # Display stock price chart.
     def display_chart(self):
         symbol = self.stockList.get(self.stockList.curselection())

@@ -1,6 +1,6 @@
 # Summary: This module contains helper functions used by the stock manager program.
-# Author: 
-# Date: 
+# Author: Stephen Behr
+# Date: 7/31/23
 
 import matplotlib.pyplot as plt
 from os import system, name
@@ -28,22 +28,23 @@ def display_stock_chart(stock_list,found):
     company=''
     y=''
     for stock in stock_list:
-        if stock.symbol == found.symbol.upper():
+        if stock.symbol == found.upper():
             company= stock.name
             for dailyData in stock.DataList:
                 m=dailyData.date.month
                 d=dailyData.date.day
                 y=dailyData.date.year
-                date.append(str(m)+'/'+str(d))
+                date.append(str(d))
                 #date.append(dailyData.date)
                 price.append(dailyData.close)
     plt.plot(date,price)
-    plt.xlabel(y)
+    string=m,y
+    plt.xlabel(string)
     plt.ylabel('Price')
     plt.title(company)
     #plt.yscale() #passing ‘log’ # Will display using logarithmic scale. Remove if you want linear scale.
     plt.show()
-    _ = input("*** Press Enter to Continue ***")
+    
 
 
 

@@ -24,22 +24,13 @@ class Stock:
         return self._shares
     @property
     def ListData(self):
-        #Alignment formatting style 'L&!' for left or 'R&!' for right
-          #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          #'L&!' or 'R&!' + formatted Value for list
-        self._List=['L&!' +self._symbol,
-                    'L&!' +self._name,
-                    'R&!' +"{:,.0f}".format(self._shares),
-                    'R&!' +"${:,.2f}".format(random.randrange(1,1100000)),
-                    'R&!' +"{:,.0f}".format(random.randrange(1,1100000))]
-        return self._List
-    
-    @property
-    def ListHeadings(self):
-        self._List=['Symbol','Company Name','Shares','Moneyformat','testing']
+        self._List=[self._symbol,self._name, "{:,.0f}".format(self._shares),
+                    "${:,.2f}".format(random.randrange(1,1100000)),
+                    "{:,.0f}".format(random.randrange(1,1100000))]
         return self._List
     def buy(self,amount):
         self._shares+=amount
+        return amount
     def sell(self,amount):
         if self._shares >= amount:
             self._shares-=amount

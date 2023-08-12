@@ -1,91 +1,88 @@
 # Summary: This module contains the user interface and logic for a console-based version of the stock manager program.
 # Author: Stephen Behr
 # Date: 7/22/23
-import csv
-from utilities   import display_stock_chart,clear_screen
+
+from utilities   import display_stock_chart#,clear_screen
 from datetime    import datetime
 from stock_class import Stock, DailyData
 from os          import path
 import stock_data
-from account_class import Robo, Traditional
+
 #My Functions
-def pretend_screen_clear():
-    print('_'*50+'')
-def new_menu(menu_header , menu_list = '' , option = '' , escape_key = ''):
-    pretend_screen_clear();
-    clear_screen()
+def pretend_screen_clear(Line_length):
+    print('_'*Line_length+'')
+def new_menu(menu_header,menu_list='',option='',escape_key=''):
+    Line_length=50
+    pretend_screen_clear(Line_length);#clear_screen()
     if option and option not in menu_list:
-        option='*!* ' + option ;border='"'*len(option)
-        if len(option)>75:
-            border ='"'*75
-        print(option+'\n'+border)
+        print('*!* '+option)
     if escape_key:
-        escape_key = " "*10 + f'Enter {escape_key} to exit this menu'
+        s=Line_length-len(menu_header)+2-len(escape_key)+6
+        escape_key= " "*s+f'Enter {escape_key}'
     print(menu_header.upper()+' |\n'+'_'*(len(menu_header))+"_|"+escape_key+"\n")
 #    menu_tab(menu_header)
 def get_Symbols(stock_list,Verbage=''):
+    if not stock_list:
+        return False,'/'
     size=5
     print('                Available Stocks')
     print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n[',end='')
     for i,stock in enumerate(stock_list):
-        x = ' |'
+        x=' |'
         if i and (i+1) % 7==0:
-            x += '\n '
+            x+='\n '
         if i==len(stock_list)-1:
-            x  = ' ]'
-        print(' '*(size-len(stock.symbol)) + stock.symbol , end = x)
+            x=' ]'
+        print(' '*(size-len(stock.symbol))+stock.symbol,end=x)
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     Input = input(f'Stock Symbol you wish to {Verbage}: ').upper() 
-    found = False
+    found=False
     for stock in stock_list:
-        if stock.symbol == Input:
-            found = stock
+        if stock.symbol==Input:
+            found=stock
             break
     return found, Input
-def number(Q = '',outsideInput = ''):
-    userInput = outsideInput
-    if not outsideInput and Q != 'pass':
-        print(Q,end="")
+def number(Q='',outsideInput=''):
+    userInput=outsideInput
+    if not outsideInput and Q!='pass':
+        print(Q,end=" ")
     while True:
-        if not outsideInput and Q!= 'pass':
+        if not outsideInput and Q!='pass':
             userInput=input()
         try:
             Num=float(userInput)
             return Num
         except:
-            if userInput == '/':
+            if userInput=='/':
                 return userInput
-            if outsideInput or Q == 'pass':
+            if outsideInput or Q=='pass':
                 return False
             print(f'"{userInput}" is a string, please enter a number: ',end='')
             userInput=''
 def select(options):
     selection=input("Enter Menu Option: ")
     if selection not in options:
-        return ' Invalid Option - Try again *!*'
+        return '*** Invalid Option - Try again ***'
     return selection
 # Main Menu
 def main_menu(stock_list,option=''):
-    menu_list = ["1","2","3","4","5","6","0"]
-    while option != "0":
+    menu_list=["1","2","3","4","5","0"]
+    while option !="0":
         new_menu("Stock Analyzer",menu_list,option)
         print("1 - Manage Stocks (Add, Update, Delete, List)")
         print("2 - Add Daily Stock Data (Date, Price, Volume)")
         print("3 - Show Report")
         print("4 - Show Chart")
         print("5 - Manage Data (Save, Load, Retrieve)")
-        print("6 - Add an Investment Account")
         print("0 - Exit Program")
         option = select(menu_list)
         if option == "1":
             manage_stocks(stock_list)
         elif option == "5":
             manage_data(stock_list)
-        elif option == "6":
-            Investment_Type(stock_list)
         elif option == "0":
-            print("    ~~~Goodbye~~~")
             pretend_screen_clear();#clear_screen()
+            print("    ~~~Goodbye~~~")
             raise SystemExit(0)
         if stock_list:
             if option == "2":
@@ -127,7 +124,7 @@ def manage_stocks(stock_list,option = ""):
 # Add new stock to track
 def add_stock(stock_list,option=""):
     while option != '0':
-        new_menu('Add Stock','','','/')
+        new_menu('Add Stock','','','/ to Cancel entry') 
         Input=['symbol','company name','shares']
         for i,key in enumerate(Input):
             while not option:
@@ -164,7 +161,7 @@ def update_shares(stock_list,option = ""):
 # Buy Stocks (add to shares)
 def buy_stock(stock_list,option=''):
     while option!='0':
-        new_menu('Buy Stock','','','/') ; Tense='Bought' ; Verbage='buy' 
+        new_menu('Buy Stock','','','/') ; Tense='Bought' ; Verbage='buy shares of' 
         found,Input=get_Symbols(stock_list, Verbage)
         if found:
             print(f'You have {found.shares} shares of',found.symbol)
@@ -183,7 +180,7 @@ def buy_stock(stock_list,option=''):
 # Sell Stocks (subtract from shares)
 def sell_stock(stock_list,option=''):
     while option!='0':
-        new_menu('Sell Stock','','','/') ; Tense='Sold' ; Verbage='sell' 
+        new_menu('Sell Stock','','','/') ; Tense='Sold' ; Verbage='sell shares of' 
         found,Input=get_Symbols(stock_list, Verbage)
         if found:
             print(f'You have {found.shares} shares of',found.symbol)
@@ -202,7 +199,7 @@ def sell_stock(stock_list,option=''):
 
 # Remove stock and all daily data
 def delete_stock(stock_list,option=''):
-    while option !='0' and stock_list:
+    while option !='0':
         new_menu('Remove Stocks','','','/') ; Tense='Removed' ; Verbage='delete'
         found,Input=get_Symbols(stock_list, Verbage)
         if found:
@@ -215,45 +212,55 @@ def delete_stock(stock_list,option=''):
             print(f'"{Input}" is not a valid option.')
             option = input("*** Press Enter to try again or 0 to return to menu ***")
 
-# List stocks being tracked
 def list_stocks(stock_list):
     new_menu('Stock Portfolio List')
-    headers=['SYMBOL','COMPANY NAME','SHARES'];Header="";s='-';sizeColumn=[10,16,4]#!!! Adjust Header title Strings
-    columnList=stock_list
-    space_between=2
-    for itemInColumn in columnList:
-        attributes=[itemInColumn.symbol,itemInColumn.name,itemInColumn.shares]#!!! adjust attributes for headers
-        for f,attribute in enumerate(attributes):
-            lenOfAttr=len(str(attribute))
-            if lenOfAttr>sizeColumn[f]-space_between :
-                if columnList.index(itemInColumn)==len(columnList)-1:
-                    sizeColumn[f]=lenOfAttr
-                else:
-                    sizeColumn[f]=lenOfAttr+space_between 
-    x=sizeColumn
-    for i,heading in enumerate(headers): 
-        last=len(headers)-1
-        if i==last:
-            Header+= ' '*(x[last]-len(headers[last]))+str(headers[last])
-        else:
-            Header+= str(heading+' '*(x[i]-len(heading)))
-    toEnd=len(Header)
-    print(Header+'\n'+'='*toEnd)
-    for stock in stock_list:
-        values =[stock.symbol,stock.name,stock.shares]
-        fromEnd=toEnd-x[0]-len(values[1])-len(str(float(values[2])))
-        print(values[0]+s*(x[0]-len(values[0]))+values[1]+s*(fromEnd)+str(float(values[2])))
+    object_List = stock_list
+    headers     = ['Symbol','Company Name','Shares','Moneyformat','testing']
+    Alignment   = ['L','L','R','R','R']      
+    minSpacing  = 3            
+    sizeOfColumn =[0.0]*len(headers)
+    
+    def SizeColumns(List):
+        for column,columnValue in enumerate(Object.ListData):
+            lenOfVal = len(str(columnValue))
+            if lenOfVal > sizeOfColumn[column]:
+                sizeOfColumn[column]=lenOfVal
+                print(sizeOfColumn,column,columnValue)
+            if sizeOfColumn[column]<len(str(headers[column])):
+                    sizeOfColumn[column]=len(str(headers[column]))
+                    print(sizeOfColumn,column,headers[column])
+        
+    def BuildRows(List,sfc):
+        Row='';
+        for column,columnValue in enumerate(List):
+            if Alignment[column]=='L':
+                Val= columnValue+sfc*(sizeOfColumn[column]-len(columnValue))
+            else:
+                Val=sfc*(sizeOfColumn[column]-len(columnValue))+columnValue
+            if column!=len(headers)-1:
+                Row += Val+sfc*minSpacing
+            else:
+                Row += Val
+        return Row
+    
+    for Object in object_List:
+        SizeColumns(Object.ListData)
+    Header=BuildRows(headers,' ')    
+    print(Header+'\n'+'='*len(Header))
+    for Object in object_List:
+        print(BuildRows(Object.ListData,'-'))
+        
     _ = input("\n*** Press Enter to Return to Previous Menu ***")
+
 
 # Add Daily Stock Data
 def add_stock_data(stock_list,option=''):
     while option !='0':
-        new_menu('Add Stock Data') ; Verbage = 'add information to'
+        new_menu('Add Stock Data','','','/') ; Verbage = 'add information to'
         found,Input=get_Symbols(stock_list, Verbage)
         if found:
-            print('Please enter the daily data information in the format as follows.')
-            print('Use numerical values and "/" for date. Include commas between data.')
-            print(f'| {found.symbol} |mm/dd/yy,ClosingPrice,Volume     */* to pick a new symbol.')
+            print('Enter Daily Data information in the format shown.')
+            print(f'| {found.symbol} |mm/dd/yy,ClosingPrice,Volume')
             import datetime ; today=datetime.date.today() ; year=today.year
             error='';inputData=''
             while option!='/' or inputData!='/':
@@ -265,7 +272,7 @@ def add_stock_data(stock_list,option=''):
                     break
                 Data=inputData.replace(' ','').split(',')
                 if len(Data)!=3:
-                    error = 'Not enough information added please check your input'
+                    error='Not enough information added please check your input'
                     continue
                 check_date=Data[0].split('/')
                 mm='!!';dd='!!';yy='!!'
@@ -285,15 +292,15 @@ def add_stock_data(stock_list,option=''):
                 price = number('',Data[1]) 
                 volume= number('',Data[2])
                 if not price:
-                    error = date+','+'!'*len(Data[1])
+                    error=date+','+'!'*len(Data[1])
                 else:
-                    error = date+','+Data[1]
+                    error=date+','+Data[1]
                 if not volume:
-                    error += ','+'!'*len(Data[2])
+                    error+=','+'!'*len(Data[2])
                 else:
-                    error += ','+Data[2]
+                    error+=','+Data[2]
                 if error.count('!'):
-                    error += '    *!* Input Error *!*'
+                    error+='    *!* Input Error *!*'
                     continue
                 from datetime import datetime
                 daily_data=DailyData(datetime.strptime(date,"%m/%d/%y"),float(price),float(volume))
@@ -372,7 +379,7 @@ def display_chart(stock_list,option=''):
         new_menu('Print Chart','','','/');Verbage='Chart'
         found,option=get_Symbols(stock_list, Verbage)
         if found:
-            display_stock_chart(stock_list,found.symbol)  
+            display_stock_chart(stock_list,found)  
         else:
             if option =='/':
                 return
@@ -400,7 +407,6 @@ def manage_data(stock_list,option=''):
             print("--- Data Retrieved from Yahoo! Finance ---")
             _ = input("Press Enter to Continue")
         elif option == "4":
-            # stock_data.import_stock_web_csv(stock_list)
             import_csv(stock_list)
         elif option == "5":
             create_test(stock_list)
@@ -421,34 +427,10 @@ def retrieve_from_web(stock_list):
     _ = input("*** Press Enter to Continue ***")
 
 # Import stock price and volume history from Yahoo! Finance using CSV Import
-def import_csv(stock_list=[],symbol='',Input=''):
-    escape='/';Input=''
-    while not symbol:
-        new_menu('Import Stock from Web Data CSV ','','',escape)
-        if not symbol:
-            symbol,Input=get_Symbols(stock_list,'Import Data for')
-        from datetime import datetime
-        if symbol:
-            File=False;Input=''
-            while not File or Input==escape:
-                try:
-                    if stock_list!='import':
-                        Input=input('Enter the name of the file: ')
-                    with open(Input,newline='') as stockData:
-                        Datareader =csv.reader(stockData, delimiter=',')
-                        File=True
-                        print(Input,'Exists, Loading...')
-                        next(Datareader)
-                        for row in Datareader:
-                            Split=row[0].split('-')
-                            Split=Split[1]+'/'+Split[2]+'/'+Split[0]
-                            obj=datetime.strptime(Split,"%m/%d/%Y")
-                            dailyData=DailyData(obj,float(row[4]),float(row[6]))
-                            symbol.add_data(dailyData)           
-                except FileNotFoundError:
-                    print(f"{Input} not found")
-        if stock_list!='import':
-            Input = input("*** Press Enter to continue or 0 to return to Menu")
+def import_csv(stock_list):
+    pretend_screen_clear();#clear_screen()
+    print("*** This Module Under Construction ***")
+    _ = input("*** Press Enter to Continue ***")
 
 #Creates a test set of stocks to quickly populate and test functions
 def create_test(stock_list):
@@ -463,17 +445,19 @@ def create_test(stock_list):
         shares=random.randint(1,5000)
         new_stock=Stock(first.upper(),name.title(),shares)
         stock_list.append(new_stock)
-    # list_stocks(stock_list)
-    # new_stock=Stock('RICH','extra shares',100000000000000)
-    # stock_list.append(new_stock)
-    # list_stocks(stock_list)
-    # new_stock=Stock('SLCN','super long company name',200000000000000)
-    # stock_list.append(new_stock)
-    # list_stocks(stock_list)
-    # new_stock=Stock('LONGSYMBOLTEST','company name',300000000000000)
-    # stock_list.append(new_stock)
-    # list_stocks(stock_list)
-    dd=15#=random.randint(15,18)
+    list_stocks(stock_list)
+    
+    new_stock=Stock('RICH','extra shares',100000000000000)
+    stock_list.append(new_stock)
+    list_stocks(stock_list)
+    new_stock=Stock('SLCN','super long company name',200000000000000)
+    stock_list.append(new_stock)
+    list_stocks(stock_list)
+    new_stock=Stock('LONGSYMBOLTEST','company name',300000000000000)
+    stock_list.append(new_stock)
+    list_stocks(stock_list)
+    
+    dd=random.randint(11,15)
     mm=str(random.randint(1,12))
     yy=str(random.randint(10,23))
     pricechange=25
@@ -495,48 +479,12 @@ def create_test(stock_list):
             date=mm+'/'+str(day)+'/'+yy 
             daily_data=DailyData(datetime.strptime(date,"%m/%d/%y"),float(price),float(volume))
             stock.add_data(daily_data)
-    #         print(f'| {stock.symbol} |{date},{"{:.2f}".format(price)},{"{:.2f}".format(volume)}')
-    #         #print(f'| {stock.symbol} |{date},{price},{volume}')
-    # print('Added random daily data for report')
-    # _ = input("*** Press Enter to Continue ***")
-    # display_report(stock_list)
-    
-def Investment_Type(stock_list):
-    option=''
-    new_menu("Investment Account",'',option,'/')
-    balance = number("What is your initial balance: $")
-    account_num = input("What is your account number: ");
-    acct= input("Do you want a Traditional (t) or Robo (r) account: ")
-    if acct.lower() == "r":
-        years = number("How many years until retirement: ")
-        robo_acct = Robo(balance, account_num, years)
-        print("Your investment return is ",'${:,.2f}'.format(robo_acct.investment_return())+"\n")
-    elif acct.lower() == "t":
-        trad_acct = Traditional(balance, account_num)
-        temp_list=[]
-        print("Choose stocks from the list below: ")
-        while True:
-            print("Stock List: [",end="")
-            for stock in stock_list:
-                print(stock.symbol," ",end="")
-            print("]")
-            symbol = input("Which stock do you want to purchase, 0 to quit: ").upper()
-            if symbol =="0":
-                break
-            shares = number("How many shares do you want to buy?: ")
-            found = False
-            for stock in stock_list:
-              if stock.symbol == symbol:
-                  found = True
-                  current_stock = stock
-            if found == True:
-                current_stock.shares += shares 
-                temp_list.append(current_stock)
-                print("Bought ",shares,"of",symbol)
-            else:
-                print("Symbol Not Found ***")
-        trad_acct.add_stock(temp_list)
+            print(f'| {stock.symbol} |{date},{"{:.2f}".format(price)},{"{:.2f}".format(volume)}')
+            #print(f'| {stock.symbol} |{date},{price},{volume}')
+    print('Added random daily data for report')
     _ = input("*** Press Enter to Continue ***")
+    display_report(stock_list)
+    
 # Begin program
 def main():
     #check for database, create if not exists
