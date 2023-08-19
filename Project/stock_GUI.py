@@ -264,7 +264,16 @@ class StockApp:
 
     # Get data from web scraping.
     def scrape_web_data(self):
-        messagebox.showinfo("Under Construction","This Module Not Yet Implemented")
+        dateFrom = simpledialog.askstring("Starting Date","Enter Starting Date (m/d/yy)")
+        dateTo = simpledialog.askstring("Ending Date","Enter Ending Date (m/d/yy")
+        try:
+            stock_data.retrieve_stock_web(dateFrom,dateTo,self.stock_list)
+        except:
+            messagebox.showerror("Cannot Get Data from Web","Check Path for Chrome Driver")
+            return
+        self.display_stock_data()
+        messagebox.showinfo("Get Data From Web","Data Retrieved")
+
 
     # Import CSV stock history file.
     def importCSV_web_data(self):

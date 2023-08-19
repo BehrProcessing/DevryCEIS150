@@ -15,7 +15,7 @@ from datetime import datetime
 from utilities import clear_screen
 from utilities import sortDailyData
 from stock_class import Stock, DailyData
-import stock_console as SC
+import stock_console_1 as SC
 # Create the SQLite database
 def create_database(stockDB="stocks.db"):
     try:
@@ -126,41 +126,54 @@ def load_stock_data(stock_list,stockDB = "stocks.db"):
 # Get stock price history from web using Web Scraping
 def retrieve_stock_web(dateStart,dateEnd,stock_list):
     #clear_screen()
-    print("*** This Module Under Construction ***")
-    _ = input("*** Press Enter to Continue ***")
+    dateFrom = str(int(time.mktime(time.strptime(dateStart,"%m/%d/%y"))))
+    dateTo = str(int(time.mktime(time.strptime(dateEnd,"%m/%d/%y"))))
+    recordCount = 0
+    for stock in stock_list:
+        stockSymbol = stock.symbol
+        url = "https://finance.yahoo.com/quote/"+stockSymbol+"/history?period1="+dateFrom+"&period2="+dateTo+"&interval=1d&filter=history&frequency=1d"
+        # Note this code assumes the use of the Chrome browser.
+        # You will have to modify if you are using a different browser.
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option('excludeSwitches',['enable-logging'])
+        options.add_experimental_option("prefs",{'profile.managed_default_content_settings.javascript': 2})
+        try:
+            driver = webdriver.Chrome(options=options)
+            driver.implicitly_wait(60)
+            driver.get(url)
+        except:
+            raise RuntimeWarning("Chrome Driver Not Found")
+    
+        soup = BeautifulSoup(driver.page_source,"html.parser")
+        row = soup.find('table',class_="W(100%) M(0)")
+        dataRows = soup.find_all('tr')
+        for row in dataRows:
+            td = row.find_all('td')
+            rowList = [i.text for i in td]
+            columnCount = len(rowList)
+            if columnCount == 7: # This row is a standard data row (otherwise it's a special case such as dividend which will be ignored)
+                daily_data = DailyData(datetime.strptime(rowList[0],"%b %d, %Y"),float(rowList[5].replace(',','')),float(rowList[6].replace(',','')))
+                stock.add_data(daily_data)
+                recordCount += 1
+    return recordCount
 
 # Get price and volume history from Yahoo! Finance using CSV import.
-def import_stock_web_csv(stock_list):
-    #add historical data to stock in stock list
-    # escape='/';Input=''
-    # while Input!=escape:
-    #     SC.new_menu('Import Stock from Web Data CSV ','','',escape)
-    #     symbol,Input=SC.get_Symbols(stock_list,'Import Data for.')
-      
-    #     if symbol:
-    #         File=False;Filename=''
-    #         while not File or Input==escape:
-    #             try:
-    #                 Input=input('Enter the name of the file')
-    #                 with open(Input,newline='') as stockData:
-    #                     Datareader =csv.reader(stockData, delimiter=',')
-    #                     File=True
-    #                     print(Filename,'Exists, Loading...')
-    #                     next(Datareader)
-    #                     for row in Datareader:
-    #                         print(type(row[0]))
-    #                         dailyData=DailyData(datetime.strptime(row[0],"%m%d/%y"),float(row[4]),float(row[6]))
-    #                         symbol.add_data(dailyData)           
-    #             except FileNotFoundError:
-    #                 print(f"{Input} not found")
-    #         option = input("*** Press Enter to continue or 0 to return to the menu ***")
-    #     else:
-    #         if Input==escape:
-    #             return
-    #         print(f'"{Input}" is not a valid option.')
-    #         option = input("*** Press Enter to try again or 0 to return to menu ***")
-        
-        _ = input("*** Press Enter to Continue ***")
+def import_stock_web_csv(symbol,File):
+    pass
+    # with open(File,newline='') as stockData:
+    #     Datareader =csv.reader(stockData, delimiter=',')
+    #     next(Datareader)
+    #     for row in Datareader:
+    #         print(type(row[0]))
+    #         print(row[0])
+    #         Split=row[0].split('-')
+    #         Split=Split[1]+'/'+Split[2]+'/'+Split[0]
+    #         obj=datetime.strptime(Split,"%m/%d/%Y")
+    #         dailyData=DailyData(obj,float(row[4]),float(row[6]))
+    #         symbol.add_data(dailyData)     
+            
+    # dailyData=DailyData(datetime.strptime(row[0],"%m%d/%y"),float(row[4]),float(row[6]))
+    # symbol.add_data(dailyData)
 
 def main():
     #clear_screen()

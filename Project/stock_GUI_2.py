@@ -269,10 +269,15 @@ class StockApp:
     # Import CSV stock history file.
     def importCSV_web_data(self):
         symbol = self.stockList.get(self.stockList.curselection())
+        print(symbol)
         file_path = filedialog.askopenfilename()
+        print(file_path)
         if file_path:
             file=file_path.split('/')[-1]
-            SC.import_csv('import',symbol,file)
+            print(file)
+            # SD.import_stock_web_csv
+            SC.import_csv(self.stock_list,symbol,file)
+            self.display_stock_data()
     # Display stock price chart.
     def display_chart(self):
         symbol = self.stockList.get(self.stockList.curselection())

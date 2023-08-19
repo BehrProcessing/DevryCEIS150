@@ -421,34 +421,41 @@ def retrieve_from_web(stock_list):
     _ = input("*** Press Enter to Continue ***")
 
 # Import stock price and volume history from Yahoo! Finance using CSV Import
-def import_csv(stock_list=[],symbol='',Input=''):
+def import_csv(stock_list=[],symbol='',OutsideFile=False):
+    from datetime import datetime
     escape='/';Input=''
+    if symbol:
+        for stock in stock_list:
+            if stock.symbol==symbol:
+                symbol=stock
+                print(stock)
     while not symbol:
         new_menu('Import Stock from Web Data CSV ','','',escape)
-        if not symbol:
-            symbol,Input=get_Symbols(stock_list,'Import Data for')
-        from datetime import datetime
-        if symbol:
-            File=False;Input=''
-            while not File or Input==escape:
-                try:
-                    if stock_list!='import':
-                        Input=input('Enter the name of the file: ')
-                    with open(Input,newline='') as stockData:
-                        Datareader =csv.reader(stockData, delimiter=',')
-                        File=True
-                        print(Input,'Exists, Loading...')
-                        next(Datareader)
-                        for row in Datareader:
-                            Split=row[0].split('-')
-                            Split=Split[1]+'/'+Split[2]+'/'+Split[0]
-                            obj=datetime.strptime(Split,"%m/%d/%Y")
-                            dailyData=DailyData(obj,float(row[4]),float(row[6]))
-                            symbol.add_data(dailyData)           
-                except FileNotFoundError:
-                    print(f"{Input} not found")
-        if stock_list!='import':
-            Input = input("*** Press Enter to continue or 0 to return to Menu")
+        symbol,Input=get_Symbols(stock_list,'Import Data for')
+    
+    if symbol:
+        File=False;Input=''
+        while not File or Input==escape:
+            try:
+                if __name__ == "__main__":
+                    Input=input('Enter the name of the file: ')
+                else:
+                    Input=OutsideFile
+                with open(Input,newline='') as stockData:
+                    Datareader =csv.reader(stockData, delimiter=',')
+                    File=True
+                    print(Input,'Exists, Loading...')
+                    next(Datareader)
+                    for row in Datareader:
+                        Split=row[0].split('-')
+                        Split=Split[1]+'/'+Split[2]+'/'+Split[0]
+                        obj=datetime.strptime(Split,"%m/%d/%Y")
+                        dailyData=DailyData(obj,float(row[4]),float(row[6]))
+                        symbol.add_data(dailyData)           
+            except FileNotFoundError:
+                print(f"{Input} not found")
+    if __name__ == "__main__":
+        Input = input("*** Press Enter to continue or 0 to return to Menu")
 
 #Creates a test set of stocks to quickly populate and test functions
 def create_test(stock_list):
